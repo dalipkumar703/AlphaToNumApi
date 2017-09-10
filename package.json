@@ -1,0 +1,17 @@
+{
+  "name": "alpha-to-num-api",
+  "version": "1.0.0",
+  "description": "Alphabet to numeric conversion.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dalip",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "boom": "^5.2.0",
+    "hapi": "^16.5.2",
+    "hapi-mongodb": "^6.2.1"
+  }
+}
