@@ -3,7 +3,7 @@
 const Bcrypt = require('bcrypt');
 const Hapi = require('hapi');
 const Basic = require('hapi-auth-basic');
-
+const Boom = require('boom');
 const server = new Hapi.Server();
 server.connection({ port: 3000 });
 
@@ -27,6 +27,50 @@ const validate = function (request, username, password, callback) {
     });
 };
 
+const dbOpts = {
+    url: 'mongodb://dalip:dannyLUCK@ds163181.mlab.com:63181/daliptodoapp',
+    settings: {
+        poolSize: 10
+    },
+    decorate: true
+};
+server.register({
+    register: require('hapi-mongodb'),
+    options: dbOpts,
+
+}, function (err) {
+    if (err) {
+        console.error(err);
+        throw err;
+    }
+
+    server.route( {
+        method: 'GET',
+        path: '/alpha/{id}',
+        config: {
+            auth: 'simple',
+            handler: function (request, reply) {
+              const db = request.mongo.db;
+              const ObjectID = request.mongo.ObjectID;
+
+
+              db.collection('counting').findOne({ alpha: request.params.id}, function (err, result) {
+
+              if (err) {
+                return reply(Boom.internal('Internal MongoDB error', err));
+              }
+              console.log("result",result);
+              reply(result);
+              });
+            }
+        }
+
+    });
+
+    server.start(function() {
+        console.log(`Server started at ${server.info.uri}`);
+    });
+});
 server.register(Basic, (err) => {
 
     if (err) {
@@ -34,6 +78,7 @@ server.register(Basic, (err) => {
     }
 
     server.auth.strategy('simple', 'basic', { validateFunc: validate });
+    server.auth.default('simple');
     server.route({
         method: 'GET',
         path: '/',
